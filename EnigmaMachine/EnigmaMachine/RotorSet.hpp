@@ -8,19 +8,31 @@
 
 #pragma once
 
-#include "Rotor.hpp"
 #include <math.h>
+#include <stdlib.h>
+#include <time.h>
+#include <set>
 
-#define NO_OF_ROTORS 3
+#include "Rotor.hpp"
+#include "Reflector.hpp"
+#include "RotorConfig.hpp"
+#include "Utils/config.h"
 
 class RotorSet {
 private:
-    Rotor _rotors[NO_OF_ROTORS];
-    Rotor _reflector;
+    Rotor* _rotors[NO_OF_ROTORS];
+    Rotor* _reflector;
     
-    long int _rotationNo;
+    RotorConfig _config;
 
 public:
-    RotorSet(int rot_nos[NO_OF_ROTORS]);
-    int parseValue(int input);
+    RotorSet(RotorConfig r_config);
+    ~RotorSet();
+    int parseValue(char input);
+    RotorSet();
+    void setRotorOffset(int rotPos, int offset);
+    void setRotorType(int rotPos, int type);
+    void setReflectorType(int type);
+
+    void randomConfig();
 };

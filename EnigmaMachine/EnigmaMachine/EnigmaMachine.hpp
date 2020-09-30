@@ -7,15 +7,23 @@
 //
 
 #pragma once
-#include "RotorSet.hpp"
+
 #include <string>
 #include <map>
 
+#include "RotorSet.hpp"
+#include "RotorConfig.hpp"
+#include "Utils/config.h"
+
 class EnigmaMachine {
     RotorSet _rotorSet;
-    std::string _intCharMap;
-    
+
 public:
-    EnigmaMachine(int rot_nos[NO_OF_ROTORS]);
+    EnigmaMachine(RotorConfig r_config);
+    EnigmaMachine();
+
     std::string encode(std::string input);
+    void setRotorOffset(int[NO_OF_ROTORS]);
+    void setRotorType();
+    void setReflectorType();
 };

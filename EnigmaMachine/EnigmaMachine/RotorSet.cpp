@@ -7,35 +7,92 @@
 //
 
 #include "RotorSet.hpp"
-
-RotorSet::RotorSet(int rot_nos[NO_OF_ROTORS]) {
+#include <iostream>
+RotorSet::RotorSet(RotorConfig r_config): _config(r_config) {
     for (int i = 0; i < NO_OF_ROTORS; i++){
-        _rotors[i] = Rotor(rot_nos[i], i+1);
+        _rotors[i] = new Rotor ( _config.types[i], _config.offsets[i] );
     }
-    _reflector = Rotor(REFLECTOR, 4);
+    _reflector = new Reflector ( _config.reflectorType );
     
-    _rotationNo = 0;
+    for (int i = 0; i < NO_OF_ROTORS - 1; i++){
+        _rotors[i]->nextRot = _rotors[i+1];
+        _rotors[i+1]->prevRot = _rotors[i];
+    }
+
+    _rotors[NO_OF_ROTORS - 1]->nextRot = _reflector;
+    _reflector->nextRot = _rotors[NO_OF_ROTORS - 1];
+}
+
+RotorSet::~RotorSet(){
+    for (int i = 0; i < NO_OF_ROTORS; i++){
+        delete _rotors[i];
+    }
+}
+
+int RotorSet::parseValue(char input){
+    char value = _rotors[0]->runThrough(input, true);
+    _rotors[0] -> rotate();
+
+    return value;
 }
 
 
-int RotorSet::parseValue(int input){
-    int value = input;
+void RotorSet::setRotorOffset(int rotPos, int offset){
+    if (rotPos >= NO_OF_ROTORS) return;
     
+    offset %= 26;
+    _rotors[rotPos]->setOffset(offset);
+    
+    _config.offsets[rotPos] = offset;
+}
+
+void RotorSet::setReflectorType(int type){
+    _reflector->setWiring(type);
+    _config.reflectorType = type;
+}
+
+void RotorSet::setRotorType(int rotPos, int type){
+    if (rotPos >= NO_OF_ROTORS) return;
+    
+    _rotors[rotPos]->setWiring(type);
+    _config.types[rotPos] = type;
+
+}
+
+void RotorSet::randomConfig(){
+    srand(time(0));
+    int type; int offset;
+    std::set<int> typesUsed;
+
     for (int i = 0; i < NO_OF_ROTORS; i++){
-        value = _rotors[i].runThrough(value);
+        offset = rand() % 26;
+
+        do {
+            type = rand() % NO_ROTOR_TYPES;
+        } while (typesUsed.count(type) > 0);
+
+        typesUsed.insert(type);
+
+        setRotorType(i, type);
+        setRotorOffset(i, offset);
     }
-    value = _reflector.runThrough(value);
-    for (int i = NO_OF_ROTORS - 1; i >= 0; i--){
-        value = _rotors[i].runThrough(value, false);
-    }
-    
-    _rotationNo++;
-    
-    for (int i = 0; i < NO_OF_ROTORS; i++){
-        if (_rotationNo % (int)pow(26,i)){
-            _rotors[i].rotate();
-        }
-    }
-    
-    return value;
+
+    type = rand() % NO_REFLECTOR_TYPES;
+    setReflectorType(type);
+}
+
+
+RotorSet::RotorSet() {
+	 for (int i = 0; i < NO_OF_ROTORS; i++){
+	        _rotors[i] = new Rotor ( _config.types[i], _config.offsets[i] );
+	    }
+	    _reflector = new Reflector ( _config.reflectorType );
+
+	    for (int i = 0; i < NO_OF_ROTORS - 1; i++){
+	        _rotors[i]->nextRot = _rotors[i+1];
+	        _rotors[i+1]->prevRot = _rotors[i];
+	    }
+
+	    _rotors[NO_OF_ROTORS - 1]->nextRot = _reflector;
+	    _reflector->nextRot = _rotors[NO_OF_ROTORS - 1];
 }
