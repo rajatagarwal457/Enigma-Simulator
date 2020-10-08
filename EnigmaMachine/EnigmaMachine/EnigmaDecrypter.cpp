@@ -53,6 +53,15 @@ bool EnigmaDecrypter::offsetIterator(){
 	return false;
 }
 
+/*bool EnigmaDecrypter::run(std::string crib, std::string plaintxt){
+	crib = custom_utils::removeSpecial(crib);
+	_crib = custom_utils::toUppercase(crib);
+	plaintxt = custom_utils::removeSpecial(plaintxt);
+	_plaintxt = custom_utils::toUppercase(plaintxt);
+	return offsetIterator();
+}
+*/
+
 bool EnigmaDecrypter::run(std::string crib, std::string plaintxt){
 	crib = custom_utils::removeSpecial(crib);
 	_crib = custom_utils::toUppercase(crib);
